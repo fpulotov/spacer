@@ -970,6 +970,19 @@
         if (document.getElementById("booking-system").style.display === "block")
           updateStatus();
       }, 30000);
+
+      // Инициализация Telegram WebApp
+      const tg = window.Telegram.WebApp;
+      tg.expand(); // Развернуть на весь экран
+
+      // Если открыто в телеграм, попробуем взять имя пользователя
+      if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const user = tg.initDataUnsafe.user;
+        if (document.getElementById("name")) {
+          document.getElementById("name").value =
+            user.first_name + (user.last_name ? " " + user.last_name : "");
+        }
+      }
     </script>
   </body>
 </html>
