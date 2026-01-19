@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>SPACER Cyber Arena | Dushanbe</title>
+    <!-- Подключаем премиальный шрифт -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      .map-container {
+        width: 100%;
+        height: 400px;
+        filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%); /* Делает карту темной под стиль сайта */
+        border-top: 1px solid var(--gold);
+        border-bottom: 1px solid var(--gold);
+        margin-top: 40px;
+      }
+
+      /* --- НАСТРОЙКИ ДИЗАЙНА (ЗОЛОТО И МИНИМАЛИЗМ) --- */
+      :root {
+        --gold: #d4af37;
+        --gold-light: #f1dfa5;
+        --gold-dark: #aa8c2c;
+        --gold-gradient: linear-gradient(
+          45deg,
+          #bf953f,
+          #fcf6ba,
+          #b38728,
+          #fbf5b7,
+          #aa771c
+        );
+        --bg: #050505;
+        --card: #121212;
+        --text: #ffffff;
+        --repair: #ff9900;
+      }
+
+      .price-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .price-table td,
+      .price-table th {
+        padding: 15px;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        text-align: left;
+      }
+      .price-table th {
+        color: var(--gold);
+      }
+
+      .card.repair {
+        border-color: var(--repair);
+        opacity: 0.8;
+        background: repeating-linear-gradient(
+          45deg,
+          #1a1a1a,
+          #1a1a1a 10px,
+          #2a2a2a 10px,
+          #2a2a2a 20px
+        ); /* Полосатый фон "стройка" */
+        cursor: not-allowed;
+      }
+
+      .card.repair .pc-status {
+        color: var(--repair) !important;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Montserrat", sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      a {
+        text-decoration: none;
+        color: white;
+        transition: 0.3s;
+      }
+
+      /* --- ФОН С ИСКРАМИ (CSS Эффект) --- */
+      .sparks-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background:
+          radial-gradient(
+            circle at 20% 30%,
+            rgba(212, 175, 55, 0.1) 0%,
+            transparent 10%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(212, 175, 55, 0.05) 0%,
+            transparent 15%
+          );
+        background-color: var(--bg);
+      }
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo-img {
+        width: 50px; /* Размер для ПК */
+        height: 50px;
+        border-radius: 50%; /* Делаем круглым */
+        border: 2px solid var(--gold); /* Золотая обводка */
+        object-fit: cover;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+      }
+
+      @media (max-width: 600px) {
+        .logo-img {
+          width: 50px; /* Уменьшаем на мобильных */
+          height: 50px;
+        }
+        .logo-text {
+          font-size: 18px; /* Уменьшаем текст рядом */
+        }
+      }
+
+      /* --- НАВИГАЦИЯ --- */
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 40px;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(5, 5, 5, 0.9);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      }
+      .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 2px solid var(--gold);
+        object-fit: cover;
+      }
+      .btn {
+        background: var(--gold-gradient);
+        color: black;
+        padding: 12px 30px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+      }
+
+      /* Логотип SPCR (Золотой текст) */
+      .logo {
+        font-weight: 900;
+        font-size: 28px;
+        letter-spacing: 5px;
+        background: linear-gradient(
+          to bottom,
+          var(--gold-light),
+          var(--gold),
+          var(--gold-dark)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 0px 20px rgba(212, 175, 55, 0.3);
+      }
+
+      /* Кнопка */
+      .btn {
+        background: linear-gradient(45deg, var(--gold-dark), var(--gold));
+        color: black;
+        padding: 12px 30px;
+        font-weight: 700;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 2px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+      }
+      .btn:hover {
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        transform: translateY(-2px);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+      }
+      .btn-outline:hover {
+        background: var(--gold);
+        color: black;
+      }
+
+      /* --- ГЛАВНЫЙ ЭКРАН --- */
+      .hero {
+        min-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        /* Затемненный фон, можно поставить фото клуба */
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.6), var(--bg)),
+          url("https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 15px;
+        font-weight: 900;
+      }
+      .hero-subtitle {
+        font-size: 1.2rem;
+        color: #ccc;
+        max-width: 800px;
+        margin-bottom: 40px;
+        line-height: 1.6;
+      }
+      .highlight {
+        color: var(--gold);
+        font-weight: bold;
+      }
+
+      /* --- СЕКЦИЯ ХАРАКТЕРИСТИК --- */
+      .section {
+        padding: 80px 20px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .section-title {
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 50px;
+        background: var(--gold-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 900;
+      }
+
+      .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+      .spec-card {
+        background: var(--card);
+        padding: 30px;
+        border: 1px solid #222;
+        border-radius: 4px;
+        text-align: center;
+        transition: 0.3s;
+      }
+      .spec-card:hover {
+        border-color: var(--gold);
+        transform: translateY(-5px);
+      }
+      .spec-icon {
+        font-size: 40px;
+        margin-bottom: 15px;
+        display: block;
+      }
+      .spec-name {
+        color: var(--gold);
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .spec-desc {
+        color: #888;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      /* --- КОНТАКТЫ И ФУТЕР --- */
+      .contacts {
+        text-align: center;
+        border-top: 1px solid #222;
+        padding-top: 50px;
+      }
+      .phone-num {
+        font-size: 2rem;
+        color: var(--gold);
+        font-weight: 900;
+        margin: 20px 0;
+        display: block;
+      }
+
+      /* --- СИСТЕМА БРОНИРОВАНИЯ --- */
+      #booking-system {
+        display: none;
+        padding-top: 40px;
+        min-height: 100vh;
+        animation: fadeIn 0.5s;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 15px;
+        margin-top: 30px;
+      }
+      .card {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        padding: 20px;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+      }
+      .card.free {
+        border-color: var(--gold);
+        box-shadow: 0 0 5px rgba(212, 175, 55, 0.1);
+      }
+
+      .card.busy {
+        border-color: #ff3c00;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a0a0a 100%);
+      }
+      .card .pc-name {
+        color: #ffffff;
+        font-weight: bold;
+        text-shadow: 0 1px 2px black;
+      }
+
+      .card.repair {
+        border-color: var(--repair);
+        opacity: 0.8;
+        background: repeating-linear-gradient(
+          45deg,
+          #1a1a1a,
+          #1a1a1a 10px,
+          #2a2a2a 10px,
+          #2a2a2a 20px
+        );
+      }
+
+      .card.busy .pc-status {
+        color: #ff5555 !important;
+        font-weight: 900;
+        font-size: 11px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 3px 6px;
+        border-radius: 4px;
+        margin-top: 5px;
+        letter-spacing: 0.5px;
+      }
+      .pc-status {
+        font-size: 10px;
+        margin-top: 8px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* МОДАЛКА */
+      #modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+      }
+      .modal-box {
+        background: #111;
+        padding: 30px;
+        border: 1px solid var(--gold);
+        width: 90%;
+        max-width: 350px;
+      }
+      input {
+        background: #222;
+        border: 1px solid #333;
+        color: white;
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Мобильная адаптация */
+      @media (max-width: 600px) {
+        .hero h1 {
+          font-size: 2.2rem;
+        }
+        nav {
+          padding: 15px 20px;
+        }
+        .btn-outline {
+          display: none;
+        } /* Скрываем верхнюю кнопку на мобилках */
+      }
+
+      /* --- СТИЛИ ДЛЯ ФИЛЬТРОВ --- */
+      .filter-nav {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap; /* Чтобы на телефоне переносились */
+      }
+
+      .filter-btn {
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        padding: 10px 20px;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: 0.3s;
+      }
+
+      .filter-btn:hover,
+      .filter-btn.active {
+        background: var(--gold);
+        color: black;
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sparks-bg"></div>
+
+    <!-- === ЛЕНДИНГ === -->
+    <div id="landing-page">
+      <nav>
+        <div class="logo-container">
+          <img src="logo.jpg" alt="SPACER" class="logo-img" />
+          <span style="font-weight: 900; letter-spacing: 2px"
+            >SPACER ARENA</span
+          >
+        </div>
+        <button class="btn" onclick="showBooking()">Забронировать</button>
+      </nav>
+
+      <header
+        class="hero"
+        style="
+          text-align: center;
+          padding: 100px 20px;
+          background:
+            linear-gradient(rgba(0, 0, 0, 0.7), var(--bg)),
+            url(&quot;https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=1920&auto=format&fit=crop&quot;);
+          background-size: cover;
+        "
+      >
+        <h1 style="font-size: 3rem; margin-bottom: 10px">
+          КИБЕР АРЕНА <span style="color: var(--gold)">SPACER</span>
+        </h1>
+        <p style="font-size: 1.2rem; color: #ccc">
+          Душанбе | Интернет-кафе нового поколения
+        </p>
+        <button class="btn" style="margin-top: 30px" onclick="showBooking()">
+          ВЫБРАТЬ МЕСТО
+        </button>
+      </header>
+
+      <section
+        class="section"
+        style="max-width: 1100px; margin: 0 auto; padding: 80px 20px"
+      >
+        <h2 class="section-title">НАШ АРСЕНАЛ</h2>
+        <div class="specs-grid">
+          <div class="spec-card">
+            <span class="spec-icon">🔥</span>
+            <div class="spec-name">МОЩНОСТЬ</div>
+            <div style="font-size: 0.9rem; color: #888">
+              RTX 4070 / 4080 Super<br />FPS без границ
+            </div>
+          </div>
+          <div class="spec-card">
+            <span class="spec-icon">⚡</span>
+            <div class="spec-name">МОНИТОРЫ</div>
+            <div style="font-size: 0.9rem; color: #888">
+              Zowie 400Гц и 540Гц<br />Выбор чемпионов
+            </div>
+          </div>
+          <div class="spec-card">
+            <span class="spec-icon">🎮</span>
+            <div class="spec-name">КОНСОЛИ</div>
+            <div style="font-size: 0.9rem; color: #888">
+              PlayStation 5 PRO<br />Эксклюзивы в 4K
+            </div>
+          </div>
+          <div class="spec-card">
+            <span class="spec-icon">🔆</span>
+            <div class="spec-name">ДЕВАЙСЫ</div>
+            <div style="font-size: 0.9rem; color: #888">
+              Asus ROG, HyperX,<br />Logitech G Pro
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section"
+        style="max-width: 1100px; margin: 0 auto; padding: 40px 20px"
+      >
+        <h2 class="section-title">ПРАЙС-ЛИСТ</h2>
+        <table class="price-table">
+          <tr>
+            <th>Пакет</th>
+            <th>Standard</th>
+            <th>VIP</th>
+            <th>PS5 PRO</th>
+          </tr>
+          <tr>
+            <td>1 Час</td>
+            <td>15 смн</td>
+            <td>25 смн</td>
+            <td>30 смн</td>
+          </tr>
+          <tr>
+            <td>3 Часа</td>
+            <td>40 смн</td>
+            <td>65 смн</td>
+            <td>80 смн</td>
+          </tr>
+        </table>
+      </section>
+
+      <section
+        class="section contacts"
+        style="text-align: center; padding: 80px 20px"
+      >
+        <h2 class="section-title">МЫ НА КАРТЕ</h2>
+        <p>г. Душанбе, улица Айни 46</p>
+        <div class="map-container">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3330.970697956532!2d68.805828!3d38.5628404!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38b5d1001f09f0ed%3A0x1ff4e12771c6c7ac!2sSPACER%20-%20Cyber%20Club!5e1!3m2!1sru!2s!4v1768827820570!5m2!1sru!2s"
+            width="100%"
+            height="100%"
+            style="border: 0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+        <a
+          href="tel:060000004"
+          style="
+            font-size: 2rem;
+            color: var(--gold);
+            font-weight: 900;
+            display: block;
+            margin-top: 30px;
+          "
+          >060-00-00-04</a
+        >
+      </section>
+    </div>
+
+    <!-- === СИСТЕМА БРОНИРОВАНИЯ === -->
+    <div id="booking-system" class="section">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 30px;
+        "
+      >
+        <button
+          onclick="showLanding()"
+          style="
+            background: transparent;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-size: 16px;
+          "
+        >
+          ← Назад
+        </button>
+        <h3 style="color: var(--gold)">КАРТА КЛУБА</h3>
+      </div>
+
+      <!-- Кнопки фильтрации -->
+      <div class="filter-nav">
+        <button class="filter-btn active" onclick="filterGrid('all', this)">
+          ВСЕ
+        </button>
+        <button class="filter-btn" onclick="filterGrid('standard', this)">
+          STANDARD
+        </button>
+        <button class="filter-btn" onclick="filterGrid('vip', this)">
+          VIP ROOM
+        </button>
+        <button class="filter-btn" onclick="filterGrid('ps', this)">
+          PS5 PRO
+        </button>
+      </div>
+      <div class="grid" id="grid">
+        <!-- Генерируется JS -->
+      </div>
+    </div>
+
+    <!-- === МОДАЛКА БРОНИ === -->
+    <div id="modal">
+      <div class="modal-box">
+        <h3
+          id="mTitle"
+          style="text-align: center; color: var(--gold); margin-bottom: 20px"
+        >
+          БРОНИРОВАНИЕ
+        </h3>
+        <form id="form">
+          <div style="margin-bottom: 15px">
+            <label style="font-size: 12px; color: #666">Имя</label
+            ><input id="name" style="width: 100%; padding: 10px" required />
+          </div>
+          <div style="margin-bottom: 15px">
+            <label style="font-size: 12px; color: #666">Телефон</label
+            ><input
+              id="phone"
+              type="tel"
+              style="width: 100%; padding: 10px"
+              required
+            />
+          </div>
+          <div style="margin-bottom: 15px">
+            <label style="font-size: 12px; color: #666">Дата</label
+            ><input
+              id="dateP"
+              type="date"
+              style="width: 100%; padding: 10px"
+              required
+            />
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-bottom: 20px">
+            <div style="flex: 1">
+              <label style="font-size: 12px; color: #666">C</label
+              ><input
+                id="timeStart"
+                type="time"
+                style="width: 100%; padding: 10px"
+                required
+              />
+            </div>
+            <div style="flex: 1">
+              <label style="font-size: 12px; color: #666">До</label
+              ><input
+                id="timeEnd"
+                type="time"
+                style="width: 100%; padding: 10px"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit" id="sBtn" class="btn" style="width: 100%">
+            ПОДТВЕРДИТЬ
+          </button>
+          <button
+            type="button"
+            onclick="closeM()"
+            style="
+              width: 100%;
+              background: transparent;
+              border: none;
+              color: #666;
+              margin-top: 10px;
+              cursor: pointer;
+            "
+          >
+            Отмена
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- === JS === -->
+    <script>
+      // ============================================================
+      // 1. ВАШИ НАСТРОЙКИ
+      // ============================================================
+      const API_URL =
+        "https://script.google.com/macros/s/AKfycbw7vRbAxDDYZTkLPk5W6O_lQqpayj1UUmiTTDTgG7lwZ87DoIy3qrwP4-sxA0lje1Yd/exec";
+
+      const CONFIG = {
+        standard: 10,
+        vip: 5,
+        ps: 5,
+      };
+      // ============================================================
+
+      let pcCache = {};
+      let selectedPC = "";
+
+      // --- НАВИГАЦИЯ ---
+      function showBooking() {
+        document.getElementById("landing-page").style.display = "none";
+        document.getElementById("booking-system").style.display = "block";
+        window.scrollTo(0, 0);
+
+        // Запускаем генерацию сетки
+        initGrid();
+      }
+
+      function showLanding() {
+        document.getElementById("booking-system").style.display = "none";
+        document.getElementById("landing-page").style.display = "block";
+      }
+
+      // --- ГЕНЕРАЦИЯ СЕТКИ И ФИЛЬТРЫ ---
+      function initGrid() {
+        const grid = document.getElementById("grid");
+
+        // Очищаем сетку перед созданием, чтобы избежать дубликатов или ошибок пустоты
+        grid.innerHTML = "";
+
+        // 1. Генерация STANDARD
+        for (let i = 1; i <= CONFIG.standard; i++) {
+          grid.innerHTML += createCard(`PC-${i}`, "standard", "🖥️");
+        }
+
+        // 2. Генерация VIP
+        for (let i = 1; i <= CONFIG.vip; i++) {
+          grid.innerHTML += createCard(`VIP-${i}`, "vip", "👑");
+        }
+
+        // 3. Генерация PS5
+        for (let i = 1; i <= CONFIG.ps; i++) {
+          grid.innerHTML += createCard(`PS-${i}`, "ps", "🎮");
+        }
+
+        // После создания сразу запрашиваем статусы
+        updateStatus();
+      }
+
+      // Вспомогательная функция рисования одной карточки
+      function createCard(id, type, icon) {
+        return `
+            <div class="card free" id="${id}" data-type="${type}" onclick="openM('${id}')">
+                <div style="font-size:24px; color:var(--gold);">${icon}</div>
+                <div style="font-weight:bold; margin-top:5px; color:white;">${id}</div>
+                <div class="pc-status" style="color:var(--gold);">Загрузка...</div>
+            </div>`;
+      }
+
+      // Функция фильтрации (Работает с кнопками)
+      function filterGrid(type, btn) {
+        // Убираем подсветку у всех кнопок
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        // Добавляем подсветку нажатой кнопке
+        if (btn) btn.classList.add("active");
+
+        // Скрываем/показываем карточки
+        const cards = document.querySelectorAll(".card");
+        cards.forEach((card) => {
+          // Если выбрано "all" ИЛИ тип карточки совпадает с нажатой кнопкой
+          if (type === "all" || card.getAttribute("data-type") === type) {
+            card.style.display = "flex";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      // --- СТАТУСЫ (СВЯЗЬ С ТАБЛИЦЕЙ) ---
+      function updateStatus() {
+        if (!API_URL || API_URL.includes("ВАША_ССЫЛКА")) {
+          console.warn("API URL не настроен");
+          return;
+        }
+
+        fetch(API_URL)
+          .then((r) => r.json())
+          .then((data) => {
+            pcCache = data;
+
+            const allIds = [];
+            // Проверка наличия CONFIG
+            if (typeof CONFIG !== "undefined") {
+              for (let i = 1; i <= CONFIG.standard; i++) allIds.push(`PC-${i}`);
+              for (let i = 1; i <= CONFIG.vip; i++) allIds.push(`VIP-${i}`);
+              for (let i = 1; i <= CONFIG.ps; i++) allIds.push(`PS-${i}`);
+            } else {
+              for (let i = 1; i <= 10; i++) allIds.push(`PC-${i}`);
+            }
+
+            allIds.forEach((id) => {
+              const el = document.getElementById(id);
+              if (!el) return;
+
+              const info = data[id];
+
+              let icon = "🖥️";
+              if (id.includes("PS")) icon = "🎮";
+              if (id.includes("VIP")) icon = "👑";
+
+              // Очищаем содержимое перед обновлением
+              el.innerHTML = "";
+
+              if (info && info.status === "busy") {
+                // --- 🔴 ЗАНЯТО (ЧЕТКИЙ ТЕКСТ) ---
+                el.className = "card busy";
+                el.innerHTML = `
+                    <div style="font-size:24px; color:#ff3c00; opacity: 0.7;">${icon}</div>
+                    <div class="pc-name" style="margin-top:5px;">${id}</div>
+                    <div class="pc-status">ЗАНЯТО ДО ${info.freeAt}</div>
+                `;
+                el.onclick = () => openM(id);
+              } else if (info && info.status === "repair") {
+                // --- 🟠 РЕМОНТ ---
+                el.className = "card repair";
+                el.innerHTML = `
+                    <div style="font-size:24px; color:var(--repair);">⚠️</div>
+                    <div class="pc-name" style="margin-top:5px;">${id}</div>
+                    <div class="pc-status" style="color:var(--repair);">ТЕХ. РАБОТЫ</div>
+                `;
+                el.onclick = () => alert("Компьютер на обслуживании.");
+              } else {
+                // --- 🟢 СВОБОДНО ---
+                el.className = "card free";
+                el.innerHTML = `
+                    <div style="font-size:24px; color:var(--gold);">${icon}</div>
+                    <div class="pc-name" style="margin-top:5px;">${id}</div>
+                    <div class="pc-status" style="color:var(--gold);">СВОБОДНО</div>
+                `;
+                el.onclick = () => openM(id);
+              }
+            });
+          })
+          .catch((err) => console.error("Ошибка:", err));
+      }
+
+      // --- МОДАЛЬНОЕ ОКНО ---
+      function openM(id) {
+        selectedPC = id;
+        document.getElementById("mTitle").innerText = id;
+        document.getElementById("modal").style.display = "flex";
+
+        const info = pcCache[id];
+        const now = new Date();
+        let startTime = now;
+
+        if (info && info.status === "busy" && info.busyUntilTs) {
+          startTime = new Date(info.busyUntilTs + 5 * 60000);
+        }
+        let endTime = new Date(startTime.getTime() + 60 * 60000);
+
+        document.getElementById("dateP").valueAsDate = startTime;
+        document.getElementById("timeStart").value = formatTime(startTime);
+        document.getElementById("timeEnd").value = formatTime(endTime);
+      }
+
+      function formatTime(date) {
+        const h = String(date.getHours()).padStart(2, "0");
+        const m = String(date.getMinutes()).padStart(2, "0");
+        return `${h}:${m}`;
+      }
+
+      function closeM() {
+        document.getElementById("modal").style.display = "none";
+      }
+
+      // --- ОТПРАВКА БРОНИ ---
+      document.getElementById("form").onsubmit = function (e) {
+        e.preventDefault();
+        const btn = document.getElementById("sBtn");
+
+        const dateVal = document.getElementById("dateP").value;
+        const startVal = document.getElementById("timeStart").value;
+        const endVal = document.getElementById("timeEnd").value;
+        let startFull = new Date(`${dateVal}T${startVal}`);
+        let endFull = new Date(`${dateVal}T${endVal}`);
+
+        if (endFull <= startFull) endFull.setDate(endFull.getDate() + 1);
+
+        if (endFull - startFull < 3600000) {
+          alert("Минимум 1 час!");
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "ОБРАБОТКА...";
+
+        const body = {
+          pcName: selectedPC,
+          name: document.getElementById("name").value,
+          phone: document.getElementById("phone").value,
+          startTime: startFull.toISOString(),
+          endTime: endFull.toISOString(),
+        };
+
+        fetch(API_URL, { method: "POST", body: JSON.stringify(body) })
+          .then((r) => r.json())
+          .then((res) => {
+            if (res.result === "error") {
+              alert(res.message);
+            } else {
+              alert("Бронь подтверждена!");
+              closeM();
+              updateStatus();
+            }
+            btn.disabled = false;
+            btn.innerText = "ПОДТВЕРДИТЬ";
+          })
+          .catch((err) => {
+            alert("Заявка отправлена.");
+            closeM();
+            updateStatus();
+            btn.disabled = false;
+            btn.innerText = "ПОДТВЕРДИТЬ";
+          });
+      };
+
+      // Автообновление
+      setInterval(() => {
+        if (document.getElementById("booking-system").style.display === "block")
+          updateStatus();
+      }, 30000);
+    </script>
+  </body>
+</html>
